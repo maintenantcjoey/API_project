@@ -52,14 +52,14 @@ class AppFixtures extends Fixture
             'Apple', 'Samsung'
         ];
         $models = [
-            "Apple" => ["4", "5", "6", "7", "8", "9", "X", "X Pro", "X Max", "12", "12 Pro"],
-            "Samsung" => ["A7", "S12", "S", "S Pro", "Note", "Note Max", "S20"]
+            "Apple" => ["iPhone 4", "iPhone 5", "iPhone 6", "iPhone 7", "iPhone 8", "iPhone 9", "iPhone X", "iPhone X Pro", "iPhone X Max", "iPhone 12", "iPhone 12 Pro"],
+            "Samsung" => ["A7", "S12", "Galaxy S", "Galaxy S Pro", "Galaxy Note", "Galaxy ote Max", "Galaxy S20"]
         ];
         $colors = ["Red", "White", "Gold", "Silver", "Metal"];
         $capacities = ["32 Go", "64 Go", "128 Go", "1 To"];
 
         $users = $manager->getRepository(User::class)->findAll();
-        for ($i = 1; $i <= 100; $i++) {
+        for ($i = 1; $i <= 113; $i++) {
             $phone = new Product();
             $phone->setPrice($faker->numberBetween(600, 1000));
             $mark = $faker->randomElement($marks);

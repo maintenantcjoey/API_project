@@ -6,9 +6,28 @@ use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * @ORM\Entity(repositoryClass=ProductRepository::class)
+ * @Hateoas\Relation("self",
+ *      href = @Hateoas\Route(
+ *          "app_phone_details",
+ *          parameters = { "id" = "expr(object.getId())" }
+ *      ),
+ *     exclusion = @Hateoas\Exclusion(groups = {"show", "list"})
+ * )
+ *
+ * @Hateoas\Relation(
+ *      "list",
+ *      href = @Hateoas\Route(
+ *          "app_phone_list"
+ *      ),
+ *     exclusion = @Hateoas\Exclusion(groups = {"show"})
+ * )
+ * @JMS\ExclusionPolicy("ALL")
  */
 class Product
 {
@@ -16,31 +35,43 @@ class Product
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @JMS\Expose()
+     * @JMS\Groups(groups={"show", "list"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @JMS\Expose()
+     * @JMS\Groups(groups={"show", "list"})
      */
     private $mark;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @JMS\Expose()
+     * @JMS\Groups(groups={"show", "list"})
      */
     private $model;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @JMS\Expose()
+     * @JMS\Groups(groups={"show", "list"})
      */
     private $color;
 
     /**
      * @ORM\Column(type="string", length=10)
+     * @JMS\Expose()
+     * @JMS\Groups(groups={"show", "list"})
      */
     private $capacity;
 
     /**
      * @ORM\Column(type="integer")
+     * @JMS\Expose()
+     * @JMS\Groups(groups={"show"})
      */
     private $price;
 
