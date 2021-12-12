@@ -2,13 +2,13 @@
 
 namespace App\Pagination;
 
+use Doctrine\ORM\Query;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class Pagination
 {
-    const LIMIT = 10;
     /**
      * @var \Knp\Component\Pager\PaginatorInterface
      */
@@ -35,29 +35,33 @@ class Pagination
         $this->generator = $generator;
     }
 
-    public function create(array $data, $route): array
+    public function create(Query $query): array
     {
-        $page = $this->requestStack->getCurrentRequest()->query->getInt('page', 1);
+        $request = $this->requestStack->getCurrentRequest();
+        $page = $request->query->getInt('page', 1);
+        $limit = $request->query->getInt('limit', 10);
+        $route = $request->attributes->get('_route');
+        $params = $request->attributes->get('_route_params', []);
         $paginator = $this->paginator->paginate(
-            $data,
+            $query,
             $page,
-            self::LIMIT
+            $limit
         );
-        $pages = (int) ceil($paginator->getTotalItemCount() / self::LIMIT);
+        $pages = (int) ceil($paginator->getTotalItemCount() / $limit);
         $this->add('page', $page);
-        $this->add('limit', self::LIMIT);
+        $this->add('limit', $limit);
         $this->add('pages', $pages);
         if ($page !== 1) {
-           $this->addLink('first', $this->generator->generate($route, ['page' => 1]));
+           $this->addLink('first', $this->generator->generate($route, ['page' => 1] + $params));
         }
         if ($page < $pages) {
-            $this->addLink('self', $this->generator->generate($route, ['page' => $page]));
-            $this->addLink('next', $this->generator->generate($route, ['page' => $page + 1]));
+            $this->addLink('self', $this->generator->generate($route, ['page' => $page] + $params));
+            $this->addLink('next', $this->generator->generate($route, ['page' => $page + 1] + $params));
         }
         if ($page <= $pages && $page > 1) {
-            $this->addLink('previous', $this->generator->generate($route, ['page' => $page - 1]));
+            $this->addLink('previous', $this->generator->generate($route, ['page' => $page - 1] + $params));
         }
-        $this->addLink('last', $this->generator->generate($route, ['page' => $pages]));
+        $this->addLink('last', $this->generator->generate($route, ['page' => $pages] + $params));
         $this->add('items', $paginator->getItems());
         return $this->items;
     }

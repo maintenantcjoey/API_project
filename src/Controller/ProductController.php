@@ -8,7 +8,6 @@ use App\Pagination\Pagination;
 use App\Repository\ProductRepository;
 use App\Service\SerialisationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Annotations as OA;
@@ -50,8 +49,8 @@ class ProductController extends AbstractController
      */
     public function all(): Response
     {
-        $items = $this->productRepository->findAll();
-        $data = $this->pagination->create($items, 'app_phone_list');
+        $query = $this->productRepository->createQueryBuilder('p')->getQuery();
+        $data = $this->pagination->create($query);
         $products = $this->serialisationService->serialize($data, ['list']);
         return AR::ok($products);
     }
