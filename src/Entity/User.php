@@ -176,4 +176,13 @@ class User
 
         return $this;
     }
+
+    public static function create($lastname, $firstname)
+    {
+        $user = new self();
+        $user->setLastname($lastname);
+        $user->setFirstname($firstname);
+
+        return $user;
+    }
 }

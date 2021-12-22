@@ -33,7 +33,8 @@
         "symfony/serializer": "5.4.*",
         "symfony/yaml": "5.4.*",
         "willdurand/hateoas": "^3.7",
-        "willdurand/hateoas-bundle": "^2.3"
+        "willdurand/hateoas-bundle": "^2.3",
+      "ext-json": "*"
     },
     "config": {
         "optimize-autoloader": true,

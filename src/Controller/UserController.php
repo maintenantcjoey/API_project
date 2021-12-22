@@ -8,12 +8,18 @@ use App\Entity\User;
 use App\Pagination\Pagination;
 use App\Repository\UserRepository;
 use App\Service\SerialisationService;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Webmozart\Assert\Assert;
+use OpenApi\Annotations as OA;
 
 /**
+ * @OA\Tag(name="Clients")
+ *
  * @Route("/clients")
  */
 class UserController extends AbstractController
@@ -39,7 +45,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/users", name="app_users_list")
+     * @Route("/{id}/users", name="app_users_list", methods={"GET"})
      */
     public function users(Client $client): Response
     {
@@ -53,7 +59,37 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/{client_id}/users/{user_id}", name="app_users_details")
+     * @Route("/{id}/users", name="app_users_create", methods={"POST"})
+     */
+    public function create(Client $client, Request $request, EntityManagerInterface $manager): Response
+    {
+        Assert::notNull($lastname = $request->get('lastname'), 'lastname is required');
+        Assert::notNull($firstname = $request->get('firstname'), 'firstname is required');
+        $user = User::create($lastname, $firstname);
+        $client->addUser($user);
+        $manager->persist($client);
+        $manager->flush();
+        $user = $this->serialisationService->serialize($user, ['show']);
+        return AR::ok($user);
+    }
+
+    /**
+     * @Route("/{client_id}/users/{user_id}", name="app_users_create", methods={"DELETE"})
+     * @Entity("user", expr="repository.find(user_id)")
+     * @Entity("client", expr="repository.find(client_id)")
+     */
+    public function delete(Client $client, EntityManagerInterface $manager, User $user): Response
+    {
+        if (!$client->getUsers()->contains($user)) {
+            throw $this->createAccessDeniedException();
+        }
+        $manager->remove($user);
+        $manager->flush();
+        return AR::ok('delete', );
+    }
+
+    /**
+     * @Route("/{client_id}/users/{user_id}", name="app_users_details", methods={"GET"})
      * @Entity("client", expr="repository.find(client_id)")
      * @Entity("user", expr="repository.find(user_id)")
      */
