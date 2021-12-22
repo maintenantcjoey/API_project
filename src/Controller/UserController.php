@@ -70,7 +70,7 @@ class UserController extends AbstractController
         $manager->persist($client);
         $manager->flush();
         $user = $this->serialisationService->serialize($user, ['show']);
-        return AR::ok($user);
+        return AR::ok($user, Response::HTTP_CREATED);
     }
 
     /**
@@ -85,7 +85,7 @@ class UserController extends AbstractController
         }
         $manager->remove($user);
         $manager->flush();
-        return AR::ok('delete', );
+        return AR::ok([]);
     }
 
     /**

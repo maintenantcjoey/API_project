@@ -5,9 +5,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AR
 {
-    public static function ok($data): Response
+    public static function ok($data, $status = Response::HTTP_OK): Response
     {
-        return new Response($data, Response::HTTP_OK, [
+        return new Response($data, $status, [
             'Content-Type' => 'application/json'
         ]);
     }
